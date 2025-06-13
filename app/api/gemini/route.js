@@ -27,11 +27,12 @@ export async function POST(request) {
       - age (string, e.g., "5 years", "10 years")
       - registration (string, e.g., "N123AA", "G-XXXX")
       - icao24 (string, e.g., "A1B2C3", "400D5E")
+	  - airline (string, e.g., "British Airways", "Lufthansa", "Indigo")
       - status (string, e.g., "On-time", "Delayed by 45 minutes", "Landed", "Cancelled")
       - origin (string, e.g., "London Heathrow (LHR)")
       - destination (string, e.g., "New York JFK (JFK)")
-      - scheduledDeparture (string, e.g., "2025-06-12 10:00 AM UTC")
-      - scheduledArrival (string, e.g., "2025-06-12 01:00 PM UTC")
+      - scheduledDeparture (string, e.g., "2025-06-12 10:00 AM IST")
+      - scheduledArrival (string, e.g., "2025-06-12 01:00 PM IST")
       - maintenanceHistorySummary (string, a brief, plausible summary of recent maintenance)
       - estimatedReliabilityScore (number, 1-100, where higher is better)
 	  - averageDelay (string, e.g., "15 minutes", "On-time")
@@ -49,6 +50,7 @@ export async function POST(request) {
 				age: { type: 'STRING' },
 				registration: { type: 'STRING' },
 				icao24: { type: 'STRING' },
+				airline: { type: 'STRING' },
 				status: { type: 'STRING' },
 				origin: { type: 'STRING' },
 				destination: { type: 'STRING' },
@@ -86,7 +88,7 @@ export async function POST(request) {
 		const model = 'gemini-2.5-flash-preview-05-20';
 		const config = {
 			thinkingConfig: {
-				thinkingBudget: 0,
+				thinkingBudget: 1000,
 			},
 			responseMimeType: 'application/json',
 			responseModalities: [Modality.TEXT],

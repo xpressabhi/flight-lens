@@ -207,6 +207,11 @@ export default function Home() {
 								{aircraftInfo.icao24}
 							</p>
 							<p className='text-gray-700'>
+								<span className='font-semibold'>Airline:</span>{' '}
+								{aircraftInfo.airline}
+							</p>
+
+							<p className='text-gray-700'>
 								<span className='font-semibold'>Current Status:</span>{' '}
 								{aircraftInfo.status}
 							</p>
