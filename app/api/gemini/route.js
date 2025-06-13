@@ -9,11 +9,9 @@ import { GoogleGenAI, Modality } from '@google/genai';
  */
 export async function POST(request) {
 	try {
-		console.log('starting');
-		const { prompt, type, schema } = await request.json();
+		const { flightNumber } = request.json();
 
 		const apiKey = process.env.GEMINI_API_KEY;
-		console.log(apiKey, prompt);
 
 		if (!apiKey) {
 			return NextResponse.json(
@@ -22,12 +20,55 @@ export async function POST(request) {
 			);
 		}
 
-		if (!prompt) {
-			return NextResponse.json(
-				{ error: 'Prompt is required' },
-				{ status: 400 },
-			);
-		}
+		const prompt = `Generate plausible (but not necessarily real-time or accurate) flight and aircraft details for flight number ${flightNumber} in JSON format. Include:
+      - flightNumber (string, same as input)
+      - make (string, e.g., Boeing, Airbus, Embraer)
+      - model (string, e.g., 737-800, A320neo, E190)
+      - age (string, e.g., "5 years", "10 years")
+      - registration (string, e.g., "N123AA", "G-XXXX")
+      - icao24 (string, e.g., "A1B2C3", "400D5E")
+      - status (string, e.g., "On-time", "Delayed by 45 minutes", "Landed", "Cancelled")
+      - origin (string, e.g., "London Heathrow (LHR)")
+      - destination (string, e.g., "New York JFK (JFK)")
+      - scheduledDeparture (string, e.g., "2025-06-12 10:00 AM UTC")
+      - scheduledArrival (string, e.g., "2025-06-12 01:00 PM UTC")
+      - maintenanceHistorySummary (string, a brief, plausible summary of recent maintenance)
+      - estimatedReliabilityScore (number, 1-100, where higher is better)
+      If you cannot plausibly generate data for the given flight number, return an empty JSON object.`;
+
+		const schema = {
+			type: 'OBJECT',
+			properties: {
+				flightNumber: { type: 'STRING' },
+				make: { type: 'STRING' },
+				model: { type: 'STRING' },
+				age: { type: 'STRING' },
+				registration: { type: 'STRING' },
+				icao24: { type: 'STRING' },
+				status: { type: 'STRING' },
+				origin: { type: 'STRING' },
+				destination: { type: 'STRING' },
+				scheduledDeparture: { type: 'STRING' },
+				scheduledArrival: { type: 'STRING' },
+				maintenanceHistorySummary: { type: 'STRING' },
+				estimatedReliabilityScore: { type: 'NUMBER' },
+			},
+			required: [
+				'flightNumber',
+				'make',
+				'model',
+				'age',
+				'registration',
+				'icao24',
+				'status',
+				'origin',
+				'destination',
+				'scheduledDeparture',
+				'scheduledArrival',
+				'maintenanceHistorySummary',
+				'estimatedReliabilityScore',
+			],
+		};
 
 		const ai = new GoogleGenAI({ apiKey });
 		const model = 'gemini-2.5-flash-preview-05-20';
