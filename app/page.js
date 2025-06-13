@@ -48,7 +48,6 @@ export default function Home() {
 				let parsedData;
 				try {
 					parsedData = JSON.parse(result.data);
-					console.log(parsedData);
 				} catch (parseError) {
 					console.error(
 						'Failed to parse JSON from local API:',
@@ -62,7 +61,7 @@ export default function Home() {
 					return;
 				}
 
-				if (parsedData) {
+				if (parsedData && parsedData.flightNumber === flightNumber) {
 					setAircraftInfo(parsedData);
 				} else {
 					setError(

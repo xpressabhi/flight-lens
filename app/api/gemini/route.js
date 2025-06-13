@@ -9,7 +9,7 @@ import { GoogleGenAI, Modality } from '@google/genai';
  */
 export async function POST(request) {
 	try {
-		const { flightNumber } = request.json();
+		const { flightNumber } = await request.json();
 
 		const apiKey = process.env.GEMINI_API_KEY;
 
@@ -20,7 +20,7 @@ export async function POST(request) {
 			);
 		}
 
-		const prompt = `Generate plausible (but not necessarily real-time or accurate) flight and aircraft details for flight number ${flightNumber} in JSON format. Include:
+		const prompt = `Generate plausible (make it as real-time or accurate possible) flight and aircraft details for flight number ${flightNumber} in JSON format. Include:
       - flightNumber (string, same as input)
       - make (string, e.g., Boeing, Airbus, Embraer)
       - model (string, e.g., 737-800, A320neo, E190)
