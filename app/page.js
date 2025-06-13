@@ -273,6 +273,27 @@ export default function Home() {
 									</span>
 								</div>
 							</div>
+							<div className='pt-4 border-t border-blue-100'>
+								<h2 className='text-2xl font-bold text-blue-800 mb-5 border-b pb-3 border-blue-200'>
+									Delay analysis for {flightNumber}
+								</h2>
+								<p className='text-gray-700'>
+									<span className='font-semibold'>Average Delay:</span>{' '}
+									{aircraftInfo.averageDelay}
+								</p>
+								<p className='text-gray-700'>
+									<span className='font-semibold'>Delay Probability:</span>{' '}
+									{aircraftInfo.delayProbability}%
+								</p>
+								<p className='text-gray-700'>
+									<span className='font-semibold'>Common Delay Reasons:</span>{' '}
+									{aircraftInfo.commonDelayReasons.join(', ')}
+								</p>
+								<p className='text-gray-700'>
+									<span className='font-semibold'>Historical Performance:</span>{' '}
+									{aircraftInfo.historicalPerformance}
+								</p>
+							</div>
 						</div>
 
 						<p className='text-sm text-red-700 italic mt-6 pt-4 border-t border-red-200'>

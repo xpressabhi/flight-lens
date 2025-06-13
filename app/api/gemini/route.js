@@ -34,6 +34,10 @@ export async function POST(request) {
       - scheduledArrival (string, e.g., "2025-06-12 01:00 PM UTC")
       - maintenanceHistorySummary (string, a brief, plausible summary of recent maintenance)
       - estimatedReliabilityScore (number, 1-100, where higher is better)
+	  - averageDelay (string, e.g., "15 minutes", "On-time")
+      - delayProbability (number, 0-100, likelihood of delay)
+      - commonDelayReasons (array of strings, e.g., ["Air traffic congestion", "Weather conditions", "Technical issues"])
+      - historicalPerformance (string, e.g., "Historically, 75% of flights on this route are on-time.")
       If you cannot plausibly generate data for the given flight number, return an empty JSON object.`;
 
 		const schema = {
@@ -52,6 +56,10 @@ export async function POST(request) {
 				scheduledArrival: { type: 'STRING' },
 				maintenanceHistorySummary: { type: 'STRING' },
 				estimatedReliabilityScore: { type: 'NUMBER' },
+				averageDelay: { type: 'STRING' },
+				delayProbability: { type: 'NUMBER' },
+				commonDelayReasons: { type: 'ARRAY', items: { type: 'STRING' } },
+				historicalPerformance: { type: 'STRING' },
 			},
 			required: [
 				'flightNumber',
@@ -67,6 +75,10 @@ export async function POST(request) {
 				'scheduledArrival',
 				'maintenanceHistorySummary',
 				'estimatedReliabilityScore',
+				'averageDelay',
+				'delayProbability',
+				'commonDelayReasons',
+				'historicalPerformance',
 			],
 		};
 
