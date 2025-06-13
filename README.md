@@ -38,3 +38,13 @@ GEMINI_API_KEY=your-gemini-api-key
 We use Gemini API because it is a more powerful model than the actual airline data api. It can generate more accurate results. at very less cost, almost free via generous free tier provided by Google Gemini API.
 
 Get API key at https://aistudio.google.com/apikey
+
+## How to pass API key securely
+
+For local , create .env.local file in root and place 
+
+```
+GEMINI_API_KEY=your-gemini-api-key
+```
+
+For Vercel, add API key as environment variable.
