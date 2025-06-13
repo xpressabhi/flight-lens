@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata = {
 	title: 'Flight Lens',
 	description: 'AI-generated flight and aircraft information',
+	other: {
+		'google-adsense-account': 'ca-pub-7214001284506571',
+	},
 };
 
 export default function RootLayout({ children }) {
