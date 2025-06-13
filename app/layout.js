@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-	title: 'AI Flight Info',
+	title: 'Flight Lens',
 	description: 'AI-generated flight and aircraft information',
 };
 
