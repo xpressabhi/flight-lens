@@ -11,6 +11,7 @@ export default function Home() {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState('');
 	const [apiCalled, setApiCalled] = useState(false); // Track if initial API call has been made
+	const [activeTab, setActiveTab] = useState('overview');
 
 	/**
 	 * Handles the flight number input change.
@@ -102,7 +103,7 @@ export default function Home() {
 	};
 
 	return (
-		<div className='min-h-screen bg-gradient-to-br from-purple-100 to-pink-100 flex flex-col items-center justify-center p-4 font-inter text-gray-800'>
+		<div className='min-h-screen bg-gradient-to-br from-purple-100 to-pink-100 flex flex-col items-center justify-center p-6 font-inter text-gray-800 max-w-7xl mx-auto'>
 			{/* <Head>  */}
 			{/* Removed as it was causing a compilation error in this environment */}
 			{/* <title>Flight Lens</title> */}
@@ -114,7 +115,7 @@ export default function Home() {
 				<h1 className='text-4xl font-extrabold text-purple-700 mb-6 text-center tracking-tight'>
 					Flight Lens
 				</h1>
-				<p className='text-center text-gray-600 mb-8'>
+				<p className='text-center text-gray-600 mb-8 text-base leading-relaxed font-medium'>
 					Enter a flight number to get aircraft details via Flight Lens.
 				</p>
 
@@ -172,7 +173,7 @@ export default function Home() {
 				{error && (
 					<div className='mt-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg shadow-md animate-fade-in'>
 						<p className='font-bold mb-2'>Error:</p>
-						<p>{error}</p>
+						<p className='text-base leading-relaxed'>{error}</p>
 						{apiCalled && (
 							<p className='text-sm mt-3 text-red-600'>
 								The AI may not be able to generate plausible data for all flight
@@ -183,133 +184,182 @@ export default function Home() {
 				)}
 
 				{aircraftInfo && (
-					<div className='mt-8 bg-blue-50 p-6 rounded-xl border border-blue-200 shadow-lg animate-slide-up'>
-						<h2 className='text-2xl font-bold text-blue-800 mb-5 border-b pb-3 border-blue-200'>
-							Flight Lens Details for {flightNumber}
-						</h2>
-						<div className='space-y-4'>
-							<p className='text-gray-700'>
-								<span className='font-semibold'>Make:</span> {aircraftInfo.make}
-							</p>
-							<p className='text-gray-700'>
-								<span className='font-semibold'>Model:</span>{' '}
-								{aircraftInfo.model}
-							</p>
-							<p className='text-700'>
-								<span className='font-semibold'>Age:</span> {aircraftInfo.age}
-							</p>
-							<p className='text-gray-700'>
-								<span className='font-semibold'>Registration:</span>{' '}
-								{aircraftInfo.registration}
-							</p>
-							<p className='text-gray-700'>
-								<span className='font-semibold'>ICAO24:</span>{' '}
-								{aircraftInfo.icao24}
-							</p>
-							<p className='text-gray-700'>
-								<span className='font-semibold'>Airline:</span>{' '}
-								{aircraftInfo.airline}
-							</p>
-
-							<p className='text-gray-700'>
-								<span className='font-semibold'>Current Status:</span>{' '}
-								{aircraftInfo.status}
-							</p>
-
-							<div className='pt-4 border-t border-blue-100'>
-								<p className='text-gray-700'>
-									<span className='font-semibold'>Origin Airport:</span>{' '}
-									{aircraftInfo.origin}
-								</p>
-								<p className='text-gray-700'>
-									<span className='font-semibold'>Destination Airport:</span>{' '}
-									{aircraftInfo.destination}
-								</p>
-								<p className='text-gray-700'>
-									<span className='font-semibold'>Scheduled Departure:</span>{' '}
-									{aircraftInfo.scheduledDeparture}
-								</p>
-								<p className='text-gray-700'>
-									<span className='font-semibold'>Scheduled Arrival:</span>{' '}
-									{aircraftInfo.scheduledArrival}
-								</p>
-							</div>
-
-							<div className='pt-4 border-t border-blue-100'>
-								<p className='text-gray-700'>
-									<span className='font-semibold'>Maintenance Summary:</span>{' '}
-									{aircraftInfo.maintenanceHistorySummary}
-								</p>
-							</div>
-
-							<div className='pt-4 border-t border-blue-100 bg-purple-50 p-4 rounded-lg shadow-inner'>
-								<p className='font-semibold text-xl text-purple-700 mb-3'>
-									Estimated Reliability Score:
-								</p>
-								<div className='flex items-center space-x-3'>
-									<span className='text-3xl font-bold text-purple-600'>
-										{typeof aircraftInfo.estimatedReliabilityScore === 'number'
-											? `${aircraftInfo.estimatedReliabilityScore}/100`
-											: 'N/A'}
-									</span>
-									<div className='w-40 h-4 rounded-full overflow-hidden bg-gray-300 shadow-sm'>
-										<div
-											className={`h-full rounded-full ${getReliabilityColor(
-												aircraftInfo.estimatedReliabilityScore,
-											)} transition-all duration-500 ease-out`}
-											style={{
-												width:
-													typeof aircraftInfo.estimatedReliabilityScore ===
-													'number'
-														? `${aircraftInfo.estimatedReliabilityScore}%`
-														: '0%',
-											}}
-										></div>
-									</div>
-									<span className='text-md font-medium text-gray-600'>
-										{typeof aircraftInfo.estimatedReliabilityScore === 'number'
-											? aircraftInfo.estimatedReliabilityScore >= 90
-												? 'Excellent'
-												: aircraftInfo.estimatedReliabilityScore >= 70
-												? 'Good'
-												: 'Needs Attention'
-											: ''}
-									</span>
-								</div>
-							</div>
-							<div className='pt-4 border-t border-blue-100'>
-								<h2 className='text-2xl font-bold text-blue-800 mb-5 border-b pb-3 border-blue-200'>
-									Delay analysis for {flightNumber}
-								</h2>
-								<p className='text-gray-700'>
-									<span className='font-semibold'>Average Delay:</span>{' '}
-									{aircraftInfo.averageDelay}
-								</p>
-								<p className='text-gray-700'>
-									<span className='font-semibold'>Delay Probability:</span>{' '}
-									{aircraftInfo.delayProbability}%
-								</p>
-								<p className='text-gray-700'>
-									<span className='font-semibold'>Common Delay Reasons:</span>{' '}
-									{aircraftInfo.commonDelayReasons.join(', ')}
-								</p>
-								<p className='text-gray-700'>
-									<span className='font-semibold'>Historical Performance:</span>{' '}
-									{aircraftInfo.historicalPerformance}
-								</p>
-							</div>
+					<>
+						<div className='flex gap-4 border-b mb-6'>
+							<button
+								onClick={() => setActiveTab('overview')}
+								className={`px-4 py-2 font-semibold ${
+									activeTab === 'overview'
+										? 'border-b-4 border-purple-600 text-purple-700'
+										: 'text-gray-500'
+								}`}
+							>
+								Overview
+							</button>
+							<button
+								onClick={() => setActiveTab('delay')}
+								className={`px-4 py-2 font-semibold ${
+									activeTab === 'delay'
+										? 'border-b-4 border-purple-600 text-purple-700'
+										: 'text-gray-500'
+								}`}
+							>
+								Delay Analysis
+							</button>
+							<button
+								onClick={() => setActiveTab('disclaimer')}
+								className={`px-4 py-2 font-semibold ${
+									activeTab === 'disclaimer'
+										? 'border-b-4 border-purple-600 text-purple-700'
+										: 'text-gray-500'
+								}`}
+							>
+								Disclaimer
+							</button>
 						</div>
 
-						<p className='text-sm text-red-700 italic mt-6 pt-4 border-t border-red-200'>
-							<span className='font-bold'>Crucial Disclaimer:</span> This data
-							is *generated by a large language model (Gemini 2.5 Flash) for
-							Flight Lens* and is not sourced from real-time flight tracking
-							databases. It is illustrative and should **not** be used for
-							actual flight planning or decision-making. Information may be
-							inaccurate, incomplete, or entirely fictitious. When in doubt try
-							again.
-						</p>
-					</div>
+						{activeTab === 'overview' && (
+							<section className='bg-white p-6 rounded-xl border border-blue-200 shadow hover:shadow-lg transition-shadow duration-300'>
+								<h2 className='text-2xl font-bold text-blue-800 mb-4 border-b pb-2 border-blue-200'>
+									Flight Lens Details for {flightNumber}
+								</h2>
+								<div className='grid grid-cols-1 gap-4 text-gray-700'>
+									<p className='font-medium'>
+										<span className='font-semibold'>Make:</span>{' '}
+										{aircraftInfo.make}
+									</p>
+									<p className='font-medium'>
+										<span className='font-semibold'>Model:</span>{' '}
+										{aircraftInfo.model}
+									</p>
+									<p className='font-medium'>
+										<span className='font-semibold'>Age:</span>{' '}
+										{aircraftInfo.age}
+									</p>
+									<p className='font-medium'>
+										<span className='font-semibold'>Registration:</span>{' '}
+										{aircraftInfo.registration}
+									</p>
+									<p className='font-medium'>
+										<span className='font-semibold'>ICAO24:</span>{' '}
+										{aircraftInfo.icao24}
+									</p>
+									<p className='font-medium'>
+										<span className='font-semibold'>Airline:</span>{' '}
+										{aircraftInfo.airline}
+									</p>
+									<p className='font-medium'>
+										<span className='font-semibold'>Current Status:</span>{' '}
+										{aircraftInfo.status}
+									</p>
+								</div>
+
+								<div className='mt-6 pt-4 border-t border-blue-100 text-gray-700'>
+									<p className='font-medium'>
+										<span className='font-semibold'>Origin Airport:</span>{' '}
+										{aircraftInfo.origin}
+									</p>
+									<p className='font-medium'>
+										<span className='font-semibold'>Destination Airport:</span>{' '}
+										{aircraftInfo.destination}
+									</p>
+									<p className='font-medium'>
+										<span className='font-semibold'>Scheduled Departure:</span>{' '}
+										{aircraftInfo.scheduledDeparture}
+									</p>
+									<p className='font-medium'>
+										<span className='font-semibold'>Scheduled Arrival:</span>{' '}
+										{aircraftInfo.scheduledArrival}
+									</p>
+								</div>
+
+								<div className='mt-6 pt-4 border-t border-blue-100 text-gray-700'>
+									<p className='font-medium'>
+										<span className='font-semibold'>Maintenance Summary:</span>{' '}
+										{aircraftInfo.maintenanceHistorySummary}
+									</p>
+								</div>
+
+								<div className='mt-6 pt-4 border-t border-blue-100 bg-purple-50 p-4 rounded-lg shadow-inner'>
+									<p className='font-semibold text-xl text-purple-700 mb-3'>
+										Estimated Reliability Score:
+									</p>
+									<div className='flex items-center space-x-3'>
+										<span className='text-3xl font-bold text-purple-600'>
+											{typeof aircraftInfo.estimatedReliabilityScore ===
+											'number'
+												? `${aircraftInfo.estimatedReliabilityScore}/100`
+												: 'N/A'}
+										</span>
+										<div className='w-40 h-4 rounded-full overflow-hidden bg-gray-300 shadow-sm'>
+											<div
+												className={`h-full rounded-full ${getReliabilityColor(
+													aircraftInfo.estimatedReliabilityScore,
+												)} transition-all duration-500 ease-out`}
+												style={{
+													width:
+														typeof aircraftInfo.estimatedReliabilityScore ===
+														'number'
+															? `${aircraftInfo.estimatedReliabilityScore}%`
+															: '0%',
+												}}
+											></div>
+										</div>
+										<span className='text-md font-medium text-gray-600'>
+											{typeof aircraftInfo.estimatedReliabilityScore ===
+											'number'
+												? aircraftInfo.estimatedReliabilityScore >= 90
+													? 'Excellent'
+													: aircraftInfo.estimatedReliabilityScore >= 70
+													? 'Good'
+													: 'Needs Attention'
+												: ''}
+										</span>
+									</div>
+								</div>
+							</section>
+						)}
+
+						{activeTab === 'delay' && (
+							<section className='bg-white p-6 rounded-xl border border-blue-200 shadow hover:shadow-lg transition-shadow duration-300'>
+								<h2 className='text-2xl font-bold text-blue-800 mb-5 border-b pb-3 border-blue-200'>
+									Delay Analysis for {flightNumber}
+								</h2>
+								<div className='space-y-3 text-gray-700'>
+									<p className='font-medium'>
+										<span className='font-semibold'>Average Delay:</span>{' '}
+										{aircraftInfo.averageDelay}
+									</p>
+									<p className='font-medium'>
+										<span className='font-semibold'>Delay Probability:</span>{' '}
+										{aircraftInfo.delayProbability}%
+									</p>
+									<p className='font-medium'>
+										<span className='font-semibold'>Common Delay Reasons:</span>{' '}
+										{aircraftInfo.commonDelayReasons.join(', ')}
+									</p>
+									<p className='font-medium'>
+										<span className='font-semibold'>
+											Historical Performance:
+										</span>{' '}
+										{aircraftInfo.historicalPerformance}
+									</p>
+								</div>
+							</section>
+						)}
+
+						{activeTab === 'disclaimer' && (
+							<p className='text-sm italic mt-6 pt-4 border-t border-red-200 bg-red-50 text-red-700 rounded-md p-4'>
+								<span className='font-bold'>Crucial Disclaimer:</span> This data
+								is *generated by a large language model (Gemini 2.5 Flash) for
+								Flight Lens* and is not sourced from real-time flight tracking
+								databases. It is illustrative and should **not** be used for
+								actual flight planning or decision-making. Information may be
+								inaccurate, incomplete, or entirely fictitious. When in doubt
+								try again.
+							</p>
+						)}
+					</>
 				)}
 			</div>
 			<div className='text-center mt-6 text-sm text-gray-500'>
