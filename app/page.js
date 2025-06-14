@@ -185,6 +185,9 @@ export default function Home() {
 
 				{aircraftInfo && (
 					<>
+						<div className='my-4 text-xl font-bold text-purple-900 text-center'>
+							✈️ Aircraft Make: {aircraftInfo.make}
+						</div>
 						<div className='flex gap-4 border-b mb-6'>
 							<button
 								onClick={() => setActiveTab('overview')}
@@ -204,7 +207,17 @@ export default function Home() {
 										: 'text-gray-500'
 								}`}
 							>
-								Delay Analysis
+								Delay
+							</button>
+							<button
+								onClick={() => setActiveTab('maintenance')}
+								className={`px-4 py-2 font-semibold ${
+									activeTab === 'maintenance'
+										? 'border-b-4 border-purple-600 text-purple-700'
+										: 'text-gray-500'
+								}`}
+							>
+								Maintenance
 							</button>
 							<button
 								onClick={() => setActiveTab('disclaimer')}
@@ -224,10 +237,6 @@ export default function Home() {
 									Flight Lens Details for {flightNumber}
 								</h2>
 								<div className='grid grid-cols-1 gap-4 text-gray-700'>
-									<p className='font-medium'>
-										<span className='font-semibold'>Make:</span>{' '}
-										{aircraftInfo.make}
-									</p>
 									<p className='font-medium'>
 										<span className='font-semibold'>Model:</span>{' '}
 										{aircraftInfo.model}
@@ -270,13 +279,6 @@ export default function Home() {
 									<p className='font-medium'>
 										<span className='font-semibold'>Scheduled Arrival:</span>{' '}
 										{aircraftInfo.scheduledArrival}
-									</p>
-								</div>
-
-								<div className='mt-6 pt-4 border-t border-blue-100 text-gray-700'>
-									<p className='font-medium'>
-										<span className='font-semibold'>Maintenance Summary:</span>{' '}
-										{aircraftInfo.maintenanceHistorySummary}
 									</p>
 								</div>
 
@@ -348,6 +350,17 @@ export default function Home() {
 							</section>
 						)}
 
+						{activeTab === 'maintenance' && (
+							<section className='bg-white p-6 rounded-xl border border-blue-200 shadow hover:shadow-lg transition-shadow duration-300'>
+								<h2 className='text-2xl font-bold text-blue-800 mb-5 border-b pb-3 border-blue-200'>
+									Maintenance History for {flightNumber}
+								</h2>
+								<p className='text-gray-700 font-medium'>
+									{aircraftInfo.maintenanceHistorySummary}
+								</p>
+							</section>
+						)}
+
 						{activeTab === 'disclaimer' && (
 							<p className='text-sm italic mt-6 pt-4 border-t border-red-200 bg-red-50 text-red-700 rounded-md p-4'>
 								<span className='font-bold'>Crucial Disclaimer:</span> This data
@@ -363,7 +376,7 @@ export default function Home() {
 				)}
 			</div>
 			<div className='text-center mt-6 text-sm text-gray-500'>
-				Flight Lens by{' '}
+				Flight Lens by  
 				<a
 					href='https://www.linkedin.com/in/akm85/'
 					target='_blank'
