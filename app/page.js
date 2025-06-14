@@ -1,6 +1,14 @@
 'use client';
 import React, { useState } from 'react';
 import Script from 'next/script';
+import {
+	MdOutlineInfo,
+	MdAccessTime,
+	MdBuild,
+	MdWarning,
+	MdStarRate,
+} from 'react-icons/md';
+import { FaPlane } from 'react-icons/fa';
 
 // import Head from 'next/head'; // Removed as it was causing a compilation error in this environment
 
@@ -111,15 +119,15 @@ export default function Home() {
 			{/* <link rel="icon" href="/favicon.ico" /> */}
 			{/* </Head> */}
 
-			<div className='bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg border border-purple-200 transform hover:scale-105 transition-transform duration-300 ease-in-out'>
-				<h1 className='text-4xl font-extrabold text-purple-700 mb-6 text-center tracking-tight'>
+			<div className='bg-white p-4 sm:p-6 rounded-xl shadow-2xl w-full max-w-xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl border border-purple-200 transform hover:scale-105 transition-transform duration-300 ease-in-out'>
+				<h1 className='text-lg sm:text-4xl font-extrabold text-purple-700 mb-4 sm:mb-6 text-center tracking-tight'>
 					Flight Lens
 				</h1>
-				<p className='text-center text-gray-600 mb-8 text-base leading-relaxed font-medium'>
+				<p className='text-center text-gray-600 mb-6 sm:mb-8 text-base leading-relaxed font-medium'>
 					Enter a flight number to get aircraft details via Flight Lens.
 				</p>
 
-				<div className='mb-6'>
+				<div className='mb-4 sm:mb-6'>
 					<label
 						htmlFor='flightNumber'
 						className='block text-gray-700 text-sm font-semibold mb-2'
@@ -132,14 +140,14 @@ export default function Home() {
 						value={flightNumber}
 						onChange={handleFlightNumberChange}
 						placeholder='e.g., LH456, UA870, BA249'
-						className='w-full px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-3 focus:ring-purple-400 transition-all duration-200'
+						className='w-full px-4 sm:px-5 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-3 focus:ring-purple-400 transition-all duration-200'
 					/>
 				</div>
 
 				<button
 					onClick={getAircraftInfo}
 					disabled={loading || !flightNumber}
-					className='w-full bg-purple-600 text-white py-3 rounded-lg font-bold text-lg hover:bg-purple-700 transition duration-300 ease-in-out shadow-lg hover:shadow-xl focus:outline-none focus:ring-3 focus:ring-purple-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center'
+					className='w-full bg-purple-600 text-white py-2 sm:py-3 rounded-lg font-bold text-lg hover:bg-purple-700 transition duration-300 ease-in-out shadow-lg hover:shadow-xl focus:outline-none focus:ring-3 focus:ring-purple-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center'
 				>
 					{loading ? (
 						<>
@@ -171,11 +179,11 @@ export default function Home() {
 				</button>
 
 				{error && (
-					<div className='mt-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg shadow-md animate-fade-in'>
-						<p className='font-bold mb-2'>Error:</p>
+					<div className='mt-4 sm:mt-6 p-3 sm:p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg shadow-md animate-fade-in'>
+						<p className='font-bold mb-1 sm:mb-2'>Error:</p>
 						<p className='text-base leading-relaxed'>{error}</p>
 						{apiCalled && (
-							<p className='text-sm mt-3 text-red-600'>
+							<p className='text-sm mt-2 sm:mt-3 text-red-600'>
 								The AI may not be able to generate plausible data for all flight
 								numbers, or there might be an issue with the AI response.
 							</p>
@@ -185,10 +193,47 @@ export default function Home() {
 
 				{aircraftInfo && (
 					<>
-						<div className='my-4 text-xl font-bold text-purple-900 text-center'>
-							✈️ Aircraft Make: {aircraftInfo.make}
+						<div className='my-4 text-lg sm:text-xl font-bold text-purple-900 text-center'>
+							<FaPlane className='inline mr-2' />
+							Aircraft Make: {aircraftInfo.make}
 						</div>
-						<div className='flex gap-4 border-b mb-6'>
+						<div className='mt-6 pt-4 border-t border-blue-100 bg-purple-50 p-4 sm:p-6 rounded-lg shadow-inner'>
+							<p className='font-semibold text-lg sm:text-xl text-purple-700 mb-3'>
+								<MdStarRate className='inline mr-2' />
+								Estimated Reliability Score:
+							</p>
+							<div className='flex items-center space-x-3'>
+								<span className='text-3xl font-bold text-purple-600'>
+									{typeof aircraftInfo.estimatedReliabilityScore === 'number'
+										? `${aircraftInfo.estimatedReliabilityScore}/100`
+										: 'N/A'}
+								</span>
+								<div className='w-40 h-4 rounded-full overflow-hidden bg-gray-300 shadow-sm'>
+									<div
+										className={`h-full rounded-full ${getReliabilityColor(
+											aircraftInfo.estimatedReliabilityScore,
+										)} transition-all duration-500 ease-out`}
+										style={{
+											width:
+												typeof aircraftInfo.estimatedReliabilityScore ===
+												'number'
+													? `${aircraftInfo.estimatedReliabilityScore}%`
+													: '0%',
+										}}
+									></div>
+								</div>
+								<span className='text-md font-medium text-gray-600'>
+									{typeof aircraftInfo.estimatedReliabilityScore === 'number'
+										? aircraftInfo.estimatedReliabilityScore >= 90
+											? 'Excellent'
+											: aircraftInfo.estimatedReliabilityScore >= 70
+											? 'Good'
+											: 'Needs Attention'
+										: ''}
+								</span>
+							</div>
+						</div>
+						<div className='flex flex-wrap justify-center gap-4 border-b mb-6 overflow-x-auto'>
 							<button
 								onClick={() => setActiveTab('overview')}
 								className={`px-4 py-2 font-semibold ${
@@ -197,7 +242,7 @@ export default function Home() {
 										: 'text-gray-500'
 								}`}
 							>
-								Overview
+								<MdOutlineInfo className='inline mr-1' /> Overview
 							</button>
 							<button
 								onClick={() => setActiveTab('delay')}
@@ -207,7 +252,7 @@ export default function Home() {
 										: 'text-gray-500'
 								}`}
 							>
-								Delay
+								<MdAccessTime className='inline mr-1' /> Delay
 							</button>
 							<button
 								onClick={() => setActiveTab('maintenance')}
@@ -217,7 +262,7 @@ export default function Home() {
 										: 'text-gray-500'
 								}`}
 							>
-								Maintenance
+								<MdBuild className='inline mr-1' /> Maintenance
 							</button>
 							<button
 								onClick={() => setActiveTab('disclaimer')}
@@ -227,16 +272,16 @@ export default function Home() {
 										: 'text-gray-500'
 								}`}
 							>
-								Disclaimer
+								<MdWarning className='inline mr-1' /> Disclaimer
 							</button>
 						</div>
 
 						{activeTab === 'overview' && (
-							<section className='bg-white p-6 rounded-xl border border-blue-200 shadow hover:shadow-lg transition-shadow duration-300'>
-								<h2 className='text-2xl font-bold text-blue-800 mb-4 border-b pb-2 border-blue-200'>
+							<section className='bg-white p-4 sm:p-6 rounded-xl border border-blue-200 shadow hover:shadow-lg transition-shadow duration-300 mb-6'>
+								<h2 className='text-lg sm:text-2xl font-bold text-blue-800 mb-4 sm:mb-6 border-b pb-2 border-blue-200'>
 									Flight Lens Details for {flightNumber}
 								</h2>
-								<div className='grid grid-cols-1 gap-4 text-gray-700'>
+								<div className='grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700'>
 									<p className='font-medium'>
 										<span className='font-semibold'>Model:</span>{' '}
 										{aircraftInfo.model}
@@ -281,50 +326,12 @@ export default function Home() {
 										{aircraftInfo.scheduledArrival}
 									</p>
 								</div>
-
-								<div className='mt-6 pt-4 border-t border-blue-100 bg-purple-50 p-4 rounded-lg shadow-inner'>
-									<p className='font-semibold text-xl text-purple-700 mb-3'>
-										Estimated Reliability Score:
-									</p>
-									<div className='flex items-center space-x-3'>
-										<span className='text-3xl font-bold text-purple-600'>
-											{typeof aircraftInfo.estimatedReliabilityScore ===
-											'number'
-												? `${aircraftInfo.estimatedReliabilityScore}/100`
-												: 'N/A'}
-										</span>
-										<div className='w-40 h-4 rounded-full overflow-hidden bg-gray-300 shadow-sm'>
-											<div
-												className={`h-full rounded-full ${getReliabilityColor(
-													aircraftInfo.estimatedReliabilityScore,
-												)} transition-all duration-500 ease-out`}
-												style={{
-													width:
-														typeof aircraftInfo.estimatedReliabilityScore ===
-														'number'
-															? `${aircraftInfo.estimatedReliabilityScore}%`
-															: '0%',
-												}}
-											></div>
-										</div>
-										<span className='text-md font-medium text-gray-600'>
-											{typeof aircraftInfo.estimatedReliabilityScore ===
-											'number'
-												? aircraftInfo.estimatedReliabilityScore >= 90
-													? 'Excellent'
-													: aircraftInfo.estimatedReliabilityScore >= 70
-													? 'Good'
-													: 'Needs Attention'
-												: ''}
-										</span>
-									</div>
-								</div>
 							</section>
 						)}
 
 						{activeTab === 'delay' && (
-							<section className='bg-white p-6 rounded-xl border border-blue-200 shadow hover:shadow-lg transition-shadow duration-300'>
-								<h2 className='text-2xl font-bold text-blue-800 mb-5 border-b pb-3 border-blue-200'>
+							<section className='bg-white p-4 sm:p-6 rounded-xl border border-blue-200 shadow hover:shadow-lg transition-shadow duration-300 mb-6'>
+								<h2 className='text-lg sm:text-2xl font-bold text-blue-800 mb-5 sm:mb-6 border-b pb-3 border-blue-200'>
 									Delay Analysis for {flightNumber}
 								</h2>
 								<div className='space-y-3 text-gray-700'>
@@ -351,8 +358,8 @@ export default function Home() {
 						)}
 
 						{activeTab === 'maintenance' && (
-							<section className='bg-white p-6 rounded-xl border border-blue-200 shadow hover:shadow-lg transition-shadow duration-300'>
-								<h2 className='text-2xl font-bold text-blue-800 mb-5 border-b pb-3 border-blue-200'>
+							<section className='bg-white p-4 sm:p-6 rounded-xl border border-blue-200 shadow hover:shadow-lg transition-shadow duration-300 mb-6'>
+								<h2 className='text-lg sm:text-2xl font-bold text-blue-800 mb-5 sm:mb-6 border-b pb-3 border-blue-200'>
 									Maintenance History for {flightNumber}
 								</h2>
 								<p className='text-gray-700 font-medium'>
