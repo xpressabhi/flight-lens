@@ -9,6 +9,7 @@ import {
 	MdStarRate,
 } from 'react-icons/md';
 import { FaPlane } from 'react-icons/fa';
+import Link from 'next/link';
 
 // import Head from 'next/head'; // Removed as it was causing a compilation error in this environment
 
@@ -392,6 +393,10 @@ export default function Home() {
 				>
 					Abhishek Maurya
 				</a>
+				<div className='mt-2'>
+					<Link href="/legal/privacy-policy" className='text-purple-600 hover:underline mx-2'>Privacy Policy</Link>
+					<Link href="/legal/terms-of-service" className='text-purple-600 hover:underline mx-2'>Terms of Service</Link>
+				</div>
 			</div>
 			<Script
 				id='adsbygoogle-script'
