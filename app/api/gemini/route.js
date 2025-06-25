@@ -85,7 +85,7 @@ export async function POST(request) {
 		};
 
 		const ai = new GoogleGenAI({ apiKey });
-		const model = 'gemini-2.5-flash-preview-05-20';
+		const model = 'gemini-2.5-flash-lite-preview-06-17';
 		const config = {
 			thinkingConfig: {
 				thinkingBudget: 1000,
