@@ -1,14 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import Script from 'next/script';
-import {
-	MdOutlineInfo,
-	MdAccessTime,
-	MdBuild,
-	MdWarning,
-	MdStarRate,
-} from 'react-icons/md';
-import { FaPlane } from 'react-icons/fa';
+import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 
 // import Head from 'next/head'; // Removed as it was causing a compilation error in this environment
@@ -20,7 +13,6 @@ export default function Home() {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState('');
 	const [apiCalled, setApiCalled] = useState(false); // Track if initial API call has been made
-	const [activeTab, setActiveTab] = useState('overview');
 
 	/**
 	 * Handles the flight number input change.
@@ -55,30 +47,7 @@ export default function Home() {
 			const result = await response.json();
 
 			if (response.ok && result.data) {
-				let parsedData;
-				try {
-					parsedData = JSON.parse(result.data);
-				} catch (parseError) {
-					console.error(
-						'Failed to parse JSON from local API:',
-						parseError,
-						'Raw response:',
-						result.data,
-					);
-					setError(
-						'Could not parse AI-generated flight data. Please try again.',
-					);
-					return;
-				}
-
-				if (parsedData && parsedData.flightNumber === flightNumber) {
-					setAircraftInfo(parsedData);
-				} else {
-					setError(
-						`AI could not generate plausible data for flight number: ${flightNumber}.`,
-					);
-					setAircraftInfo(null);
-				}
+				setAircraftInfo(result.data);
 			} else {
 				console.error('Error from /api/gemini (flightInfo):', result);
 				setError(
@@ -193,194 +162,25 @@ export default function Home() {
 				)}
 
 				{aircraftInfo && (
-					<>
-						<div className='my-4 text-lg sm:text-xl font-bold text-purple-900 text-center'>
-							<FaPlane className='inline mr-2' />
-							Aircraft Make: {aircraftInfo.make}
-						</div>
-						<div className='mt-6 pt-4 border-t border-blue-100 bg-purple-50 p-4 sm:p-6 rounded-lg shadow-inner'>
-							<p className='font-semibold text-lg sm:text-xl text-purple-700 mb-3'>
-								<MdStarRate className='inline mr-2' />
-								Estimated Reliability Score:
-							</p>
-							<div className='flex items-center space-x-3'>
-								<span className='text-3xl font-bold text-purple-600'>
-									{typeof aircraftInfo.estimatedReliabilityScore === 'number'
-										? `${aircraftInfo.estimatedReliabilityScore}/100`
-										: 'N/A'}
-								</span>
-								<div className='w-40 h-4 rounded-full overflow-hidden bg-gray-300 shadow-sm'>
-									<div
-										className={`h-full rounded-full ${getReliabilityColor(
-											aircraftInfo.estimatedReliabilityScore,
-										)} transition-all duration-500 ease-out`}
-										style={{
-											width:
-												typeof aircraftInfo.estimatedReliabilityScore ===
-												'number'
-													? `${aircraftInfo.estimatedReliabilityScore}%`
-													: '0%',
-										}}
-									></div>
-								</div>
-								<span className='text-md font-medium text-gray-600'>
-									{typeof aircraftInfo.estimatedReliabilityScore === 'number'
-										? aircraftInfo.estimatedReliabilityScore >= 90
-											? 'Excellent'
-											: aircraftInfo.estimatedReliabilityScore >= 70
-											? 'Good'
-											: 'Needs Attention'
-										: ''}
-								</span>
-							</div>
-						</div>
-						<div className='flex flex-wrap justify-center gap-4 border-b mb-6 overflow-x-auto'>
-							<button
-								onClick={() => setActiveTab('overview')}
-								className={`px-4 py-2 font-semibold ${
-									activeTab === 'overview'
-										? 'border-b-4 border-purple-600 text-purple-700'
-										: 'text-gray-500'
-								}`}
-							>
-								<MdOutlineInfo className='inline mr-1' /> Overview
-							</button>
-							<button
-								onClick={() => setActiveTab('delay')}
-								className={`px-4 py-2 font-semibold ${
-									activeTab === 'delay'
-										? 'border-b-4 border-purple-600 text-purple-700'
-										: 'text-gray-500'
-								}`}
-							>
-								<MdAccessTime className='inline mr-1' /> Delay
-							</button>
-							<button
-								onClick={() => setActiveTab('maintenance')}
-								className={`px-4 py-2 font-semibold ${
-									activeTab === 'maintenance'
-										? 'border-b-4 border-purple-600 text-purple-700'
-										: 'text-gray-500'
-								}`}
-							>
-								<MdBuild className='inline mr-1' /> Maintenance
-							</button>
-							<button
-								onClick={() => setActiveTab('disclaimer')}
-								className={`px-4 py-2 font-semibold ${
-									activeTab === 'disclaimer'
-										? 'border-b-4 border-purple-600 text-purple-700'
-										: 'text-gray-500'
-								}`}
-							>
-								<MdWarning className='inline mr-1' /> Disclaimer
-							</button>
-						</div>
+					<div className='my-4'>
+						{/* Render insights as markdown if available */}
+						<section className='bg-white p-4 sm:p-6 rounded-xl border border-purple-200 shadow hover:shadow-lg transition-shadow duration-300 mb-6'>
+							<h2 className='text-lg sm:text-2xl font-bold text-purple-800 mb-4 sm:mb-6 border-b pb-2 border-purple-200'>
+								AI-Powered Insights
+							</h2>
 
-						{activeTab === 'overview' && (
-							<section className='bg-white p-4 sm:p-6 rounded-xl border border-blue-200 shadow hover:shadow-lg transition-shadow duration-300 mb-6'>
-								<h2 className='text-lg sm:text-2xl font-bold text-blue-800 mb-4 sm:mb-6 border-b pb-2 border-blue-200'>
-									Flight Lens Details for {flightNumber}
-								</h2>
-								<div className='grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700'>
-									<p className='font-medium'>
-										<span className='font-semibold'>Model:</span>{' '}
-										{aircraftInfo.model}
-									</p>
-									<p className='font-medium'>
-										<span className='font-semibold'>Age:</span>{' '}
-										{aircraftInfo.age}
-									</p>
-									<p className='font-medium'>
-										<span className='font-semibold'>Registration:</span>{' '}
-										{aircraftInfo.registration}
-									</p>
-									<p className='font-medium'>
-										<span className='font-semibold'>ICAO24:</span>{' '}
-										{aircraftInfo.icao24}
-									</p>
-									<p className='font-medium'>
-										<span className='font-semibold'>Airline:</span>{' '}
-										{aircraftInfo.airline}
-									</p>
-									<p className='font-medium'>
-										<span className='font-semibold'>Current Status:</span>{' '}
-										{aircraftInfo.status}
-									</p>
-								</div>
-
-								<div className='mt-6 pt-4 border-t border-blue-100 text-gray-700'>
-									<p className='font-medium'>
-										<span className='font-semibold'>Origin Airport:</span>{' '}
-										{aircraftInfo.origin}
-									</p>
-									<p className='font-medium'>
-										<span className='font-semibold'>Destination Airport:</span>{' '}
-										{aircraftInfo.destination}
-									</p>
-									<p className='font-medium'>
-										<span className='font-semibold'>Scheduled Departure:</span>{' '}
-										{aircraftInfo.scheduledDeparture}
-									</p>
-									<p className='font-medium'>
-										<span className='font-semibold'>Scheduled Arrival:</span>{' '}
-										{aircraftInfo.scheduledArrival}
-									</p>
-								</div>
-							</section>
-						)}
-
-						{activeTab === 'delay' && (
-							<section className='bg-white p-4 sm:p-6 rounded-xl border border-blue-200 shadow hover:shadow-lg transition-shadow duration-300 mb-6'>
-								<h2 className='text-lg sm:text-2xl font-bold text-blue-800 mb-5 sm:mb-6 border-b pb-3 border-blue-200'>
-									Delay Analysis for {flightNumber}
-								</h2>
-								<div className='space-y-3 text-gray-700'>
-									<p className='font-medium'>
-										<span className='font-semibold'>Average Delay:</span>{' '}
-										{aircraftInfo.averageDelay}
-									</p>
-									<p className='font-medium'>
-										<span className='font-semibold'>Delay Probability:</span>{' '}
-										{aircraftInfo.delayProbability}%
-									</p>
-									<p className='font-medium'>
-										<span className='font-semibold'>Common Delay Reasons:</span>{' '}
-										{aircraftInfo.commonDelayReasons.join(', ')}
-									</p>
-									<p className='font-medium'>
-										<span className='font-semibold'>
-											Historical Performance:
-										</span>{' '}
-										{aircraftInfo.historicalPerformance}
-									</p>
-								</div>
-							</section>
-						)}
-
-						{activeTab === 'maintenance' && (
-							<section className='bg-white p-4 sm:p-6 rounded-xl border border-blue-200 shadow hover:shadow-lg transition-shadow duration-300 mb-6'>
-								<h2 className='text-lg sm:text-2xl font-bold text-blue-800 mb-5 sm:mb-6 border-b pb-3 border-blue-200'>
-									Maintenance History for {flightNumber}
-								</h2>
-								<p className='text-gray-700 font-medium'>
-									{aircraftInfo.maintenanceHistorySummary}
-								</p>
-							</section>
-						)}
-
-						{activeTab === 'disclaimer' && (
-							<p className='text-sm italic mt-6 pt-4 border-t border-red-200 bg-red-50 text-red-700 rounded-md p-4'>
-								<span className='font-bold'>Crucial Disclaimer:</span> This data
-								is *generated by a large language model (Gemini 2.5 Flash) for
-								Flight Lens* and is not sourced from real-time flight tracking
-								databases. It is illustrative and should **not** be used for
-								actual flight planning or decision-making. Information may be
-								inaccurate, incomplete, or entirely fictitious. When in doubt
-								try again.
-							</p>
-						)}
-					</>
+							<ReactMarkdown>{aircraftInfo}</ReactMarkdown>
+						</section>
+						<p className='text-sm italic mt-6 pt-4 border-t border-red-200 bg-red-50 text-red-700 rounded-md p-4'>
+							<span className='font-bold'>Crucial Disclaimer:</span> This data
+							is *generated by a large language model (Gemini 2.5 Flash) for
+							Flight Lens* and is not sourced from real-time flight tracking
+							databases. It is illustrative and should **not** be used for
+							actual flight planning or decision-making. Information may be
+							inaccurate, incomplete, or entirely fictitious. When in doubt try
+							again.
+						</p>
+					</div>
 				)}
 			</div>
 			<div className='text-center mt-6 text-sm text-gray-500'>
@@ -394,8 +194,18 @@ export default function Home() {
 					Abhishek Maurya
 				</a>
 				<div className='mt-2'>
-					<Link href="/legal/privacy-policy" className='text-purple-600 hover:underline mx-2'>Privacy Policy</Link>
-					<Link href="/legal/terms-of-service" className='text-purple-600 hover:underline mx-2'>Terms of Service</Link>
+					<Link
+						href='/legal/privacy-policy'
+						className='text-purple-600 hover:underline mx-2'
+					>
+						Privacy Policy
+					</Link>
+					<Link
+						href='/legal/terms-of-service'
+						className='text-purple-600 hover:underline mx-2'
+					>
+						Terms of Service
+					</Link>
 				</div>
 			</div>
 			<Script

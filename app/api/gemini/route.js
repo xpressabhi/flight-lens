@@ -20,79 +20,38 @@ export async function POST(request) {
 			);
 		}
 
-		const prompt = `Generate plausible (make it as real-time or accurate possible) flight and aircraft details for flight number ${flightNumber} in JSON format. Include:
-      - flightNumber (string, same as input)
-      - make (string, e.g., Boeing, Airbus, Embraer)
-      - model (string, e.g., 737-800, A320neo, E190)
-      - age (string, e.g., "5 years", "10 years")
-      - registration (string, e.g., "N123AA", "G-XXXX")
-      - icao24 (string, e.g., "A1B2C3", "400D5E")
-	  - airline (string, e.g., "British Airways", "Lufthansa", "Indigo")
-      - status (string, e.g., "On-time", "Delayed by 45 minutes", "Landed", "Cancelled")
-      - origin (string, e.g., "London Heathrow (LHR)")
-      - destination (string, e.g., "New York JFK (JFK)")
-      - scheduledDeparture (string, e.g., "2025-06-12 10:00 AM IST")
-      - scheduledArrival (string, e.g., "2025-06-12 01:00 PM IST")
-      - maintenanceHistorySummary (string, a brief, plausible summary of recent maintenance)
-      - estimatedReliabilityScore (number, 1-100, where higher is better)
-	  - averageDelay (string, e.g., "15 minutes", "On-time")
-      - delayProbability (number, 0-100, likelihood of delay)
-      - commonDelayReasons (array of strings, e.g., ["Air traffic congestion", "Weather conditions", "Technical issues"])
-      - historicalPerformance (string, e.g., "Historically, 75% of flights on this route are on-time.")
-      If you cannot plausibly generate data for the given flight number, return an empty JSON object.`;
-
-		const schema = {
-			type: 'OBJECT',
-			properties: {
-				flightNumber: { type: 'STRING' },
-				make: { type: 'STRING' },
-				model: { type: 'STRING' },
-				age: { type: 'STRING' },
-				registration: { type: 'STRING' },
-				icao24: { type: 'STRING' },
-				airline: { type: 'STRING' },
-				status: { type: 'STRING' },
-				origin: { type: 'STRING' },
-				destination: { type: 'STRING' },
-				scheduledDeparture: { type: 'STRING' },
-				scheduledArrival: { type: 'STRING' },
-				maintenanceHistorySummary: { type: 'STRING' },
-				estimatedReliabilityScore: { type: 'NUMBER' },
-				averageDelay: { type: 'STRING' },
-				delayProbability: { type: 'NUMBER' },
-				commonDelayReasons: { type: 'ARRAY', items: { type: 'STRING' } },
-				historicalPerformance: { type: 'STRING' },
-			},
-			required: [
-				'flightNumber',
-				'make',
-				'model',
-				'age',
-				'registration',
-				'icao24',
-				'status',
-				'origin',
-				'destination',
-				'scheduledDeparture',
-				'scheduledArrival',
-				'maintenanceHistorySummary',
-				'estimatedReliabilityScore',
-				'averageDelay',
-				'delayProbability',
-				'commonDelayReasons',
-				'historicalPerformance',
-			],
-		};
+		const prompt = `Generate plausible (make it as real-time or accurate possible) flight and aircraft details for flight number ${flightNumber} in markdown format. Include:
+	  - Summary (string, a brief overview of the flight)	
+	  - Estimated Reliability Score (number, 1-100, where higher is better)
+      - Make (string, e.g., Boeing, Airbus, Embraer)
+      - Model (string, e.g., 737-800, A320neo, E190)
+      - Age (string, e.g., "5 years", "10 years")
+	  - Airline (string, e.g., "British Airways", "Lufthansa", "Indigo")
+      - Status (string, e.g., "On-time", "Delayed by 45 minutes", "Landed", "Cancelled")
+      - Origin (string, e.g., "London Heathrow (LHR)")
+      - Destination (string, e.g., "New York JFK (JFK)")
+      - Scheduled Departure (string, e.g., "2025-06-12 10:00 AM IST")
+      - Scheduled Arrival (string, e.g., "2025-06-12 01:00 PM IST")
+      - Maintenance History Summary (string, a brief, plausible summary of recent maintenance)
+	  - Average Delay (string, e.g., "15 minutes", "On-time")
+      - Delay Probability (number, 0-100, likelihood of delay)
+      - Common Delay Reasons (string, e.g., "Air traffic congestion, Weather conditions, Technical issues")
+      - Historical Performance (string, e.g., "Historically, 75% of flights on this route are on-time.")
+      If you cannot plausibly generate data for the given flight number, return an error message in markdown format.`;
 
 		const ai = new GoogleGenAI({ apiKey });
-		const model = 'gemini-2.5-flash-preview-05-20';
+		const model = 'gemini-2.5-flash-lite-preview-06-17';
+
+		// Define the grounding tool
+		const groundingTool = {
+			googleSearch: {},
+		};
+
 		const config = {
 			thinkingConfig: {
-				thinkingBudget: 1000,
+				thinkingBudget: 0,
 			},
-			responseMimeType: 'application/json',
-			responseModalities: [Modality.TEXT],
-			responseSchema: schema,
+			tools: [groundingTool],
 		};
 
 		const response = await ai.models.generateContent({
